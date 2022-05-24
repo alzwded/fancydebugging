@@ -20,6 +20,8 @@ Make sure to **always** cast the return value when using GDB's `call`, it needs 
 
 ## Example
 
+### CentOS
+
 ```gdb
 gdb -x script.gdb test.bin
 GNU gdb (GDB) Red Hat Enterprise Linux 7.6.1-120.el7
@@ -57,4 +59,51 @@ $4 = 0x7ffff6fea060 <buf> "Object{val=0,cnt=0}"
 +c
 0x602010
 [Inferior 1 (process 19606) exited normally]
+```
+
+### Alpine
+
+```gdb
+gdb -x script_musl.gdb test.bin
+GNU gdb (GDB) 10.1
+Copyright (C) 2020 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-alpine-linux-musl".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from test.bin...
++start
+Temporary breakpoint 1 at 0x1270: file test.cpp, line 6.
+
+Temporary breakpoint 1, main () at test.cpp:6
+6           Object* o = new Object();
++next
+7           o->Stuff();
++call (void*)dlopen("./libutils.so", 2)
+$1 = (void *) 0x7fffff7448a0
++call (const char*)__Dump(o)
+$2 = 0x7fffff544080 <buf> "Object{val=42,cnt=0}"
++next
+8           printf("%d\n", static_cast<int>(*o));
++call (const char*)__Dump(o)
+$3 = 0x7fffff544080 <buf> "Object{val=84,cnt=1}"
++next
+84
+9           delete o;
++next
+10          printf("%p\n", o);
++call (const char*)__Dump(o)
+$4 = 0x7fffff544080 <buf> "Object{val=-272716322,cnt=233885882}"
++c
+0x7fffff7e7aa0
+[Inferior 1 (process 1642) exited normally]
 ```
