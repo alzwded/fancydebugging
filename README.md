@@ -30,19 +30,29 @@ This GDB was configured as "x86_64-redhat-linux-gnu".
 For bug reporting instructions, please see:
 <http://www.gnu.org/software/gdb/bugs/>...
 Reading symbols from /work/testgdb/test.bin...done.
++start
 Temporary breakpoint 1 at 0x400928: file test.cpp, line 6.
 
 Temporary breakpoint 1, main () at test.cpp:6
 6           Object* o = new Object();
++next
 7           o->Stuff();
++call (void*)__libc_dlopen_mode("./libutils.so", 2)
 $1 = (void *) 0x602090
++call (const char*)__Dump(o)
 $2 = 0x7ffff6fea060 <buf> "Object{val=42,cnt=0}"
++next
 8           printf("%d\n", static_cast<int>(*o));
++call (const char*)__Dump(o)
 $3 = 0x7ffff6fea060 <buf> "Object{val=84,cnt=1}"
++next
 84
 9           delete o;
++next
 10          printf("%p\n", o);
++call (const char*)__Dump(o)
 $4 = 0x7ffff6fea060 <buf> "Object{val=0,cnt=0}"
++c
 0x602010
-[Inferior 1 (process 10121) exited normally]
+[Inferior 1 (process 19606) exited normally]
 ```
