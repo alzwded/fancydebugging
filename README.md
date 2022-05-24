@@ -27,17 +27,15 @@ define __dump
 end
 ```
 
-You can `source` it in your session when needed.
+You can `source` it in your session when needed. Read up on `help define` to know more.
 
-Use the appropriate libc builtin for dlopen.
+Use the appropriate libc builtin for dlopen. (e.g. on Alpine/musl it's actually `dlopen`)
 
-Read up on `help define` to know more.
+I recommend that your debug routines have 0 net resource usage. You don't really want these to have memory leaks or to create unlockable locks or to cause deadlocks or anything like that 😃. If you must do multi-stage things that involve allocations and whatnot, it might (?) be possible to use the `$nn` stuff or fancy defines, or just plain keep track of `int` or `void*` return values and deallocate as needed. Couple this with gdb scripts or defines. But really, don't.
 
-I recommend that your debug routines have 0 net resource usage. You don't really want these to have memory leaks or to create unlockable locks or to cause deadlocks or anything like that 😃. If you must do multi-stage things that involve allocations and whatnot, it might (?) be possible to use the `$nn` stuff or fancy defines, or just plain keep track of `int` or `void*` return values and deallocate as needed. But really don't.
+On glibc systems, you can leverage `(void)__libc_dlclose(void*)`. E.g. you can `call (void)__libc_dlclose($1)` to unload the library. You can then proceed to recompile/relink and load it back with new code. So if you have multi-step debugging stuff to do, just do it in a separate c/cpp file and load the whole shebang. You can update the script/and/or/define to `dlopen`, *the call* and `dlclose` all in one.
 
-On glibc systems, you can leverage `(void)__libc_dlclose(void*)`. E.g. you can `call (void)__libc_dlclose($1)` to unload the library. You can then proceed to recompile/relink and load it back with new code. So if you have multi-step debugging stuff to do, just do it in a separate c/cpp file and load the whole shebang. 
-
-Note, `dlclose` on musl seems to be stubbed out, so if you want unload-reload, you need to daisy chain to a "debug utilities loader" SO linked in with `-ldl` which loads, runs and closes your real runtime debugging code. While you're there, you can have the loader run `make debugger` or something like that, plus a gdb `define` like `livedebug` that calls your entrypoint, to the effect that you're live editing a C source and GDB "magically" picks up what you're doing. C interpreter, ho! 😄
+Note, `dlclose` on musl seems to be stubbed out (-- determined empyrically, and partially confirmed via a quick glance over source on github; I think what happens is that after `dlclose`, `dlsym` will give an error or some other uninteresting thing), so if you want unload-reload (or load-do-unload), you need to daisy chain to a "debug utilities loader" SO linked with `-ldl` which does all of that. While you're there, you can have the loader run `make debugger` or something like that, plus a gdb `define` like `livedebug` that calls your entrypoint, to the effect that you're live editing a C source and GDB "magically" picks up what you're doing. C interpreter, ho! 😄
 
 ## Example
 
