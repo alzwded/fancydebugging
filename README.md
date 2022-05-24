@@ -18,6 +18,27 @@ You can then call your magic debug symbols.
 
 Make sure to **always** cast the return value when using GDB's `call`, it needs to know where (if any) return value goes.
 
+You can use `define` to make these easier to use interactive. And put the `dlopen` part in a gdb script, like
+
+```gdb
+call (void*)__libc_dlopen_mode("./libutils.so", 2)
+define __dump
+  call (const char*)__Dump($arg0)
+end
+```
+
+You can `source` it in your session when needed.
+
+Use the appropriate libc builtin for dlopen.
+
+Read up on `help define` to know more.
+
+I recommend that your debug routines have 0 net resource usage. You don't really want these to have memory leaks or to create unlockable locks or to cause deadlocks or anything like that 😃. If you must do multi-stage things that involve allocations and whatnot, it might (?) be possible to use the `$nn` stuff or fancy defines, or just plain keep track of `int` or `void*` return values and deallocate as needed. But really don't.
+
+On glibc systems, you can leverage `(void)__libc_dlclose(void*)`. E.g. you can `call (void)__libc_dlclose($1)` to unload the library. You can then proceed to recompile/relink and load it back with new code. So if you have multi-step debugging stuff to do, just do it in a separate c/cpp file and load the whole shebang. 
+
+Note, `dlclose` on musl seems to be stubbed out, so if you want unload-reload, you need to daisy chain to a "debug utilities loader" SO linked in with `-ldl` which loads, runs and closes your real runtime debugging code. While you're there, you can have the loader run `make debugger` or something like that, plus a gdb `define` like `livedebug` that calls your entrypoint, to the effect that you're live editing a C source and GDB "magically" picks up what you're doing. C interpreter, ho! 😄
+
 ## Example
 
 ### CentOS
