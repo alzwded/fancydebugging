@@ -1,5 +1,5 @@
 showcase: all
-	gdb -x script.gdb test.bin
+	( cat /etc/os-release | grep alpine ) && gdb -x script_musl.gdb test.bin || gdb -x script.gdb test.bin
 .PHONY: showcase
 
 all: test.bin libutils.so libcommon.so
