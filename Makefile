@@ -11,7 +11,7 @@ libutils.so: utils.cpp common.h libcommon.so
 	g++ -shared -o libutils.so -g -fPIC utils.cpp -L. -lcommon -Wl,-rpath=.
 
 libcommon.so: common.cpp common.h
-	g++ -shared -o libcommon.so -g -fPIC common.cpp
+	g++ -shared -o libcommon.so -fPIC common.cpp
 
 clean:
-	rm -f test.bin libutils.so
+	rm -f test.bin libutils.so libcommon.so
