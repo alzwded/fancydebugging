@@ -2,6 +2,8 @@
 
 I always forget what the magic libc function is, so here's a repo to remind myself :-)
 
+How to load C-linkage debug utilities in a GDB session when (for some reason) you can't fully debug your application due to missing symbols, missing defines in the TU, impracticality of including the debug utilities in your main app, etc.
+
 ## The premise
 
 The premise is you have a C++ app, with lots of libraries, and you might not even have symbols for everything. Maybe you're using a lot of pImpls. Maybe it's not exactly trivial to "dump" an object and understand what it's about. Maybe the TU doesn't have enough definitions in it to allow you to see into an object. Maybe you just want to run some arbitrary debug code that you don't really want compiled in.
