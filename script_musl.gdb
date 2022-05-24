@@ -1,3 +1,4 @@
+set trace-commands on
 start
 next
 # or 0x102 instead of 2
