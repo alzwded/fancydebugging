@@ -2,11 +2,11 @@
 #include <cstdlib>
 #include <cstring>
 
-extern "C" __attribute__((visibility("default"))) const char* LDR()
+extern "C" __attribute__((visibility("default"))) const char* LDR(void* p)
 {
     static char buf[256];
     void* h;
-    const char* (*fn)(); 
+    const char* (*fn)(void*); 
     const char* stuff;
 
     int hr = system("make debugger > /dev/null 2>&1");
@@ -26,7 +26,7 @@ extern "C" __attribute__((visibility("default"))) const char* LDR()
         goto err_SYM;
     }
 
-    stuff = fn();
+    stuff = fn(p);
     strncpy(buf, stuff, 255);
     buf[255] = '\0';
     fn = NULL;

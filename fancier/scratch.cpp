@@ -3,7 +3,7 @@
 # define WHICH 0
 #endif
 
-extern "C" __attribute__((visibility("default"))) const char* LDR()
+extern "C" __attribute__((visibility("default"))) const char* LDR(void* p)
 {
     static char buf[256];
     size_t n = 0;
@@ -21,9 +21,9 @@ extern "C" __attribute__((visibility("default"))) const char* LDR()
             return buf;
         default:
             {
-                buf[0] = '4';
-                buf[1] = '2';
-                buf[2] = '\0';
+                int printed = snprintf(buf, 255, "pointer@%p: ", p);
+                snprintf(buf+printed, 255-printed, "%s", (char*)p);
+                buf[255] = '\0';
             }
             return buf;
     }

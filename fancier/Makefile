@@ -1,5 +1,6 @@
 showcase: all
 	gdb -x script.gdb test.bin
+.PHONY: showcase
 
 all: test.bin libldr.so
 

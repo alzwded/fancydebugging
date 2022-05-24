@@ -1,0 +1,5 @@
+fancier/debugger
+fancier/scratch.cpp
+test.bin
+*.o
+*.so
